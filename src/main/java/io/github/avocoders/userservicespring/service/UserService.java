@@ -8,6 +8,7 @@ import io.github.avocoders.userservicespring.mapper.UserMapper;
 import io.github.avocoders.userservicespring.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,4 +33,8 @@ public class UserService {
         return userMapper.toResponse(foundUser);
     }
 
+    public List<UserResponse> getAll() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(userMapper::toResponse).toList();
+    }
 }
