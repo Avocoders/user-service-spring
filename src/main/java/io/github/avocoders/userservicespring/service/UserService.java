@@ -1,6 +1,7 @@
 package io.github.avocoders.userservicespring.service;
 
 import io.github.avocoders.userservicespring.dto.CreateUserRequest;
+import io.github.avocoders.userservicespring.dto.UpdateUserRequest;
 import io.github.avocoders.userservicespring.dto.UserResponse;
 import io.github.avocoders.userservicespring.entity.User;
 import io.github.avocoders.userservicespring.exception.UserNotFoundException;
@@ -37,4 +38,13 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users.stream().map(userMapper::toResponse).toList();
     }
+
+    public UserResponse update(Long id, UpdateUserRequest request) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        User foundUser = optionalUser.orElseThrow(() -> new UserNotFoundException(id));
+        userMapper.updateEntity(foundUser, request);
+        User updatedUser = userRepository.save(foundUser);
+        return userMapper.toResponse(updatedUser);
+    }
+
 }

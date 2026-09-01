@@ -1,6 +1,7 @@
 package io.github.avocoders.userservicespring.controller;
 
 import io.github.avocoders.userservicespring.dto.CreateUserRequest;
+import io.github.avocoders.userservicespring.dto.UpdateUserRequest;
 import io.github.avocoders.userservicespring.dto.UserResponse;
 import io.github.avocoders.userservicespring.service.UserService;
 import jakarta.validation.Valid;
@@ -36,6 +37,16 @@ public class UserController {
     @GetMapping
     public List<UserResponse> getAll() {
         return userService.getAll();
+    }
+
+    @PutMapping("/{id}")
+    public UserResponse update(
+            @PathVariable
+            Long id,
+            @Valid @RequestBody
+            UpdateUserRequest request
+    ) {
+        return userService.update(id, request);
     }
 
 }
