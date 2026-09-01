@@ -25,4 +25,12 @@ public class UserController {
         return userService.create(request);
     }
 
+    @GetMapping("/{id}")
+    public UserResponse getById(
+            @PathVariable Long id) {
+        return userService.getById(id);
+    }
+
+
+
 }
