@@ -9,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +49,55 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.age").value(20))
                 .andExpect(jsonPath("$.createdAt").exists());
 
+    }
+
+    @Test
+    void getAll_shouldReturnUsers_whenUserExists() throws Exception {
+        LocalDateTime createdAt1 = LocalDateTime.of(2024, 8, 5, 14, 0);
+        LocalDateTime createdAt2 = LocalDateTime.of(2025, 3, 7, 16, 0);
+        LocalDateTime createdAt3 = LocalDateTime.of(2026, 9, 1, 9, 0);
+
+        List<UserResponse> responses = List.of(
+                new UserResponse(
+                1L,
+                "Veronika",
+                "veronika@ya.ru",
+                32,
+                createdAt1 ),
+                new UserResponse(
+                2L,
+                "Aleksey",
+                "aleksey@ya.ru",
+                36,
+                createdAt2 ),
+                new UserResponse(
+                3L,
+                "Kirill",
+                "kirill@ya.ru",
+                3,
+                createdAt3 )
+        );
+
+        when(userService.getAll()).thenReturn(responses);
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[2].id").value(3))
+                .andExpect(jsonPath("$[0].name").value("Veronika"))
+                .andExpect(jsonPath("$[1].name").value("Aleksey"))
+                .andExpect(jsonPath("$[2].name").value("Kirill"))
+                .andExpect(jsonPath("$[0].email").value("veronika@ya.ru"))
+                .andExpect(jsonPath("$[1].email").value("aleksey@ya.ru"))
+                .andExpect(jsonPath("$[2].email").value("kirill@ya.ru"))
+                .andExpect(jsonPath("$[0].age").value(32))
+                .andExpect(jsonPath("$[1].age").value(36))
+                .andExpect(jsonPath("$[2].age").value(3))
+                .andExpect(jsonPath("$[0].createdAt").value("2024-08-05T14:00:00"))
+                .andExpect(jsonPath("$[1].createdAt").value("2025-03-07T16:00:00"))
+                .andExpect(jsonPath("$[2].createdAt").value("2026-09-01T09:00:00"))
+                .andExpect(jsonPath("$.length()").value(3));
     }
 
 }
