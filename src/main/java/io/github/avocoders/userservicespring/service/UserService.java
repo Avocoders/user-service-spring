@@ -10,7 +10,6 @@ import io.github.avocoders.userservicespring.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -29,8 +28,7 @@ public class UserService {
     }
 
     public UserResponse getById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        User foundUser = optionalUser.orElseThrow(() -> new UserNotFoundException(id));
+        User foundUser = findUserById(id);
         return userMapper.toResponse(foundUser);
     }
 
@@ -40,11 +38,17 @@ public class UserService {
     }
 
     public UserResponse update(Long id, UpdateUserRequest request) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        User foundUser = optionalUser.orElseThrow(() -> new UserNotFoundException(id));
+        User foundUser = findUserById(id);
         userMapper.updateEntity(foundUser, request);
         User updatedUser = userRepository.save(foundUser);
         return userMapper.toResponse(updatedUser);
     }
+
+    private User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+
 
 }
