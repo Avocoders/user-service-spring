@@ -44,11 +44,14 @@ public class UserService {
         return userMapper.toResponse(updatedUser);
     }
 
+    public void delete(Long id) {
+        User foundUser = findUserById(id);
+        userRepository.delete(foundUser);
+    }
+
     private User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
-
-
 
 }
