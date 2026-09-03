@@ -36,7 +36,7 @@ class UserControllerTest {
     private UserService userService;
 
     @Test
-    void getById_shouldReturnUser_whenUserExists() throws Exception {
+    void getById_shouldReturnUsers_whenUserExists() throws Exception {
         LocalDateTime createdAt = LocalDateTime.of(2026, 9, 2, 12, 0);
         UserResponse response = new UserResponse(
                 1L,
@@ -54,7 +54,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("Anna"))
                 .andExpect(jsonPath("$.email").value("anna@ya.ru"))
                 .andExpect(jsonPath("$.age").value(20))
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.createdAt").value("2026-09-02T12:00:00"));
 
     }
 
