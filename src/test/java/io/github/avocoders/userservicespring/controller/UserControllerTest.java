@@ -171,4 +171,15 @@ class UserControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void getAll_shouldReturnEmptyList_whenUsersDoNotExist() throws Exception {
+        when(userService.getAll()).thenReturn(List.of());
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));;
+    }
+
+
+
 }
