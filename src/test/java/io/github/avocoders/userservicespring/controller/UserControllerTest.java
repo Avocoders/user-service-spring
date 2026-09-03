@@ -3,6 +3,7 @@ package io.github.avocoders.userservicespring.controller;
 import io.github.avocoders.userservicespring.dto.CreateUserRequest;
 import io.github.avocoders.userservicespring.dto.UpdateUserRequest;
 import io.github.avocoders.userservicespring.dto.UserResponse;
+import io.github.avocoders.userservicespring.exception.UserNotFoundException;
 import io.github.avocoders.userservicespring.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +161,14 @@ class UserControllerTest {
                 .andExpect(status().isNoContent());
         verify(userService).delete(id);
 
+    }
+
+    @Test
+    void getById_shouldReturnNotFound_whenUserDoesNotExist() throws Exception {
+        Long id = 10L;
+        when(userService.getById(id)).thenThrow(new UserNotFoundException(id));
+        mockMvc.perform(get("/api/users/{id}", id))
+                .andExpect(status().isNotFound());
     }
 
 }
