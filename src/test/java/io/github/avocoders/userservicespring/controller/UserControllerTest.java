@@ -1,5 +1,6 @@
 package io.github.avocoders.userservicespring.controller;
 
+import io.github.avocoders.userservicespring.dto.CreateUserRequest;
 import io.github.avocoders.userservicespring.dto.UserResponse;
 import io.github.avocoders.userservicespring.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -7,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,6 +28,9 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private UserService userService;
@@ -99,5 +106,28 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[2].createdAt").value("2026-09-01T09:00:00"))
                 .andExpect(jsonPath("$.length()").value(3));
     }
+
+    @Test
+    void create_shouldCreateUser_whenRequestIsValid() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.of(2026, 8, 5, 5, 0);
+        UserResponse response = new UserResponse(1L, "Dominica", "dominika@ya.ru", 2, createdAt);
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        createUserRequest.setName("Dominica");
+        createUserRequest.setEmail("dominika@ya.ru");
+        createUserRequest.setAge(2);
+
+        when(userService.create(any(CreateUserRequest.class))).thenReturn(response);
+        mockMvc.perform(post("/api/users")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createUserRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Dominica"))
+                .andExpect(jsonPath("$.email").value("dominika@ya.ru"))
+                .andExpect(jsonPath("$.age").value(2))
+                .andExpect(jsonPath("$.createdAt").value("2026-08-05T05:00:00"));
+    }
+
 
 }
