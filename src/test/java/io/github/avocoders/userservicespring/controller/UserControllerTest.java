@@ -1,6 +1,7 @@
 package io.github.avocoders.userservicespring.controller;
 
 import io.github.avocoders.userservicespring.dto.CreateUserRequest;
+import io.github.avocoders.userservicespring.dto.UpdateUserRequest;
 import io.github.avocoders.userservicespring.dto.UserResponse;
 import io.github.avocoders.userservicespring.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -14,11 +15,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -36,7 +38,7 @@ class UserControllerTest {
     private UserService userService;
 
     @Test
-    void getById_shouldReturnUsers_whenUserExists() throws Exception {
+    void getById_shouldReturnUser_whenUserExists() throws Exception {
         LocalDateTime createdAt = LocalDateTime.of(2026, 9, 2, 12, 0);
         UserResponse response = new UserResponse(
                 1L,
@@ -59,7 +61,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getAll_shouldReturnUsers_whenUserExists() throws Exception {
+    void getAll_shouldReturnUsers_whenUsersExist() throws Exception {
         LocalDateTime createdAt1 = LocalDateTime.of(2024, 8, 5, 14, 0);
         LocalDateTime createdAt2 = LocalDateTime.of(2025, 3, 7, 16, 0);
         LocalDateTime createdAt3 = LocalDateTime.of(2026, 9, 1, 9, 0);
@@ -129,5 +131,35 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.createdAt").value("2026-08-05T05:00:00"));
     }
 
+    @Test
+    void update_shouldUpdateUser_whenRequestIsValid() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.of(2026, 2, 20, 13, 0);
+        UserResponse response = new UserResponse(3L, "Dominica", "dominika@ya.ru", 2, createdAt);
+        UpdateUserRequest userRequest = new UpdateUserRequest();
+        userRequest.setName("Dominica");
+        userRequest.setEmail("dominika@ya.ru");
+        userRequest.setAge(2);
+
+        when(userService.update(eq(3L), any(UpdateUserRequest.class))).thenReturn(response);
+        mockMvc.perform(put("/api/users/{id}", 3L)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.name").value("Dominica"))
+                .andExpect(jsonPath("$.email").value("dominika@ya.ru"))
+                .andExpect(jsonPath("$.age").value(2))
+                .andExpect(jsonPath("$.createdAt").value("2026-02-20T13:00:00"));
+    }
+
+    @Test
+    void delete_shouldDeleteUser_whenUserExists() throws Exception {
+        Long id = 5L;
+        mockMvc.perform(delete("/api/users/{id}", id))
+                .andExpect(status().isNoContent());
+        verify(userService).delete(id);
+
+    }
 
 }
