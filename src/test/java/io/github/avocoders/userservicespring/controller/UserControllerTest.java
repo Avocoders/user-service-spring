@@ -17,8 +17,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -177,9 +176,23 @@ class UserControllerTest {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(0));;
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
+    @Test
+    void create_shouldReturnBadRequest_whenRequestIsInvalid() throws Exception {
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        createUserRequest.setName("Dominica");
+        createUserRequest.setEmail("dominikaya.ru");
+        createUserRequest.setAge(20);
+
+        mockMvc.perform(post("/api/users")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createUserRequest))
+                        )
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(userService);
+    }
 
 
 }
