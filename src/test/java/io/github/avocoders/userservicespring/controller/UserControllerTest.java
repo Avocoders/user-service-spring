@@ -210,4 +210,31 @@ class UserControllerTest {
         verifyNoInteractions(userService);
     }
 
+    @Test
+    void update_shouldReturnNotFound_whenUserDoesNotExist() throws Exception {
+        Long id = 3L;
+        UpdateUserRequest request = new UpdateUserRequest();
+        request.setName("Alya");
+        request.setEmail("fbdd@re.ru");
+        request.setAge(4);
+
+        when(userService.update(eq(id), any(UpdateUserRequest.class))).thenThrow(new UserNotFoundException(id));
+        mockMvc.perform(put("/api/users/{id}", id)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isNotFound());
+        verify(userService).update(eq(id), any(UpdateUserRequest.class));
+    }
+
+    @Test
+    void delete_shouldReturnNotFound_whenUserDoesNotExist() throws Exception {
+        Long id = 5L;
+
+        doThrow(new UserNotFoundException(id)).when(userService).delete(id);
+        mockMvc.perform(delete("/api/users/{id}", id)).andExpect(status().isNotFound());
+        verify(userService).delete(id);
+
+    }
+
 }
