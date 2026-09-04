@@ -194,5 +194,20 @@ class UserControllerTest {
         verifyNoInteractions(userService);
     }
 
+    @Test
+    void update_shouldReturnBadRequest_whenRequestIsInvalid() throws Exception {
+        Long id = 3L;
+        UpdateUserRequest request = new UpdateUserRequest();
+        request.setName("  ");
+        request.setEmail("fd@re.ru");
+        request.setAge(4);
+
+        mockMvc.perform(put("/api/users/{id}", id)
+                           .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request))
+                        )
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(userService);
+    }
 
 }
