@@ -1,9 +1,15 @@
 package io.github.avocoders.userservicespring.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -20,38 +26,10 @@ public class User {
     @Column(name="created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public User() {}
-
     public User(String name, String email, Integer age) {
         this.name = name;
         this.email = email;
         this.age = age;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-    public String getEmail() {
-        return this.email;
-    }
-    public Integer getAge() {
-        return this.age;
-    }
-    public Long getId() {
-        return this.id;
-    }
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
     }
 
     @PrePersist
