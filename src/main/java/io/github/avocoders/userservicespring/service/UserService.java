@@ -7,19 +7,17 @@ import io.github.avocoders.userservicespring.entity.User;
 import io.github.avocoders.userservicespring.exception.UserNotFoundException;
 import io.github.avocoders.userservicespring.mapper.UserMapper;
 import io.github.avocoders.userservicespring.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
 
     public UserResponse create(CreateUserRequest request) {
         User user = userMapper.toEntity(request);
@@ -37,11 +35,11 @@ public class UserService {
         return users.stream().map(userMapper::toResponse).toList();
     }
 
+    @Transactional
     public UserResponse update(Long id, UpdateUserRequest request) {
         User foundUser = findUserById(id);
         userMapper.updateEntity(foundUser, request);
-        User updatedUser = userRepository.save(foundUser);
-        return userMapper.toResponse(updatedUser);
+        return userMapper.toResponse(foundUser);
     }
 
     public void delete(Long id) {
