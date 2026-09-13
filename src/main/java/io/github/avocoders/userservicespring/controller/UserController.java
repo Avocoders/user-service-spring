@@ -62,9 +62,9 @@ public class UserController {
     @GetMapping
     public CollectionModel<UserResponse> getAll() {
         List<UserResponse> usersList = userService.getAll();
-        Link users = linkTo(methodOn(UserController.class).getAll()).withRel("users");
+        Link self = linkTo(methodOn(UserController.class).getAll()).withSelfRel();
         CollectionModel<UserResponse> model = CollectionModel.of(usersList);
-        model.add(users);
+        model.add(self);
         return model;
     }
 
