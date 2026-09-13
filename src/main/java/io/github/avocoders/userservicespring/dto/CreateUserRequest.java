@@ -7,7 +7,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
+@Getter
 @Schema(description = "Запрос на создание пользователя")
 public class CreateUserRequest {
     @Schema(description = "Имя пользователя", example = "Nika")
@@ -35,15 +37,6 @@ public class CreateUserRequest {
     }
     public void setAge(Integer age) {
         this.age = age;
-    }
-    public String getName() {
-        return this.name;
-    }
-    public String getEmail() {
-        return this.email;
-    }
-    public Integer getAge() {
-        return this.age;
     }
 
 }
